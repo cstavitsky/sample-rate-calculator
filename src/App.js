@@ -209,7 +209,7 @@ function App() {
                       <MathJax.Context input="ascii">
                         <div>
                           <MathJax.Node inline>
-                            {`frac("estimated transactions")(day) < frac("max transactions")(day) => ${samplePercentage}%`}
+                            {`"estimated transactions per day" < "max transactions per day" => ${samplePercentage}%`}
                           </MathJax.Node>
                         </div>
                       </MathJax.Context>
@@ -219,7 +219,7 @@ function App() {
                       <MathJax.Context input="ascii">
                         <div>
                           <MathJax.Node inline>
-                            {`frac(${calculatedTransactions.toLocaleString()} " "transactions)(day) < frac(${maxTransactionsPerDay.toLocaleString()} " " transactions)(day) => ${samplePercentage}%`}
+                            {`${calculatedTransactions.toLocaleString()} " transactions per day" < ${maxTransactionsPerDay.toLocaleString()} " transactions per day" => ${samplePercentage}%`}
                           </MathJax.Node>
                         </div>
                       </MathJax.Context>
@@ -230,7 +230,7 @@ function App() {
                       <MathJax.Context input="ascii">
                         <div>
                           <MathJax.Node inline>
-                            {`frac("max transactions")("day") * frac("day")("estimated transactions") * 100% = "sample rate percentage"`}
+                            {`frac("max transactions per day")("estimated transactions per day") * 100% = "sample rate percentage"`}
                           </MathJax.Node>
                         </div>
                       </MathJax.Context>
@@ -239,7 +239,7 @@ function App() {
                       <MathJax.Context input="ascii">
                         <div>
                           <MathJax.Node inline>
-                            {`frac(${maxTransactionsPerDay.toLocaleString()} " transactions")("day") * frac("day")(${calculatedTransactions.toLocaleString()} " transactions")*100% = ${samplePercentage}%`}
+                            {`frac(${maxTransactionsPerDay.toLocaleString()} " transactions per day")(${calculatedTransactions.toLocaleString()} " transactions per day") * 100% = ${samplePercentage}%`}
                           </MathJax.Node>
                         </div>
                       </MathJax.Context>
