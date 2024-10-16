@@ -104,7 +104,7 @@ function App() {
       <Paper elevation={3} style={{ padding: "30px" }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography inline variant="h4" style={{ padding: "30px" }}>
+            <Typography inline variant="h6">
               Transaction Sample Rate Calculator
             </Typography>
           </Grid>
