@@ -94,16 +94,42 @@ function App() {
   const samplePercentage = calculateSamplePercentage();
 
   return (
-    <Container m style={{ marginTop: "50px" }}>
-      <Paper elevation={3} style={{ padding: "20px" }}>
-        <Box textAlign="center">
-          <Typography variant="h4" gutterBottom>
-            Transaction Sample Rate Calculator
-          </Typography>
-        </Box>
+    <Container l style={{ marginTop: "50px" }}>
+      <Paper elevation={3} style={{ padding: "30px" }}>
+        <Grid2 container spacing={2}>
+          <Grid2 item xs={2} textAlign="center">
+            <Box>
+              <Typography variant="h4">
+                Transaction Sample Rate Calculator
+              </Typography>
 
-        <Grid2 container spacing={6} direction="column" alignItems="center">
-          <Grid2 item>
+              <Typography variant="h7">
+                1. How many transactions are generated in a "typical" session?
+              </Typography>
+              <Typography>
+                <p>
+                  While we can guess this based on enabled/in-play
+                  auto-instrumentation, we should instead have the customer
+                  integrate Sentry locally in a dev environment using a{" "}
+                  <b>1.0</b> tracesSampleRate, then ask them to walk through a
+                  typical critical flow / user-journey. Then we can see how many
+                  transactions were generated and sent_up to Sentry . This will
+                  give us an accurate count of number-of-transactions per
+                  session.
+                </p>
+              </Typography>
+
+              <Typography variant="h6">
+                2. How many sessions in a given day?
+                <Typography variant="body2">
+                  Customers will are likely already measuring and tracking this,
+                  so we can ask directly.{" "}
+                </Typography>
+              </Typography>
+            </Box>
+          </Grid2>
+
+          <Grid2 item xs={6}>
             <TextField
               label="Transactions per session"
               variant="outlined"
@@ -113,9 +139,7 @@ function App() {
               error={!!errorMessage}
               helperText={errorMessage ? "Please enter a valid integer" : ""}
             />
-          </Grid2>
-
-          <Grid2 item>
+            <hr />
             <TextField
               label="Sessions per day"
               variant="outlined"
@@ -128,7 +152,7 @@ function App() {
           </Grid2>
 
           {calculatedTransactions > 0 && (
-            <Grid2 item>
+            <Grid2 item xs={12}>
               <Box textAlign="left">
                 <div ref={printRef} class="padded">
                   <TableContainer m component={Paper}>
