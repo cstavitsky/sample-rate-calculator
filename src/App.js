@@ -100,10 +100,10 @@ function App() {
             <Grid2 item>
               <Box textAlign="left">
                 <Typography variant="h6">
-                  Max transactions/day: 13,824,000
+                  Max transactions/project/day: 13,824,000
                 </Typography>
                 <Typography variant="h6">
-                  Estimated transactions/day:{" "}
+                  Estimated transactions/project/day:{" "}
                   {calculatedTransactions.toLocaleString()}
                 </Typography>
                 <hr />
@@ -138,10 +138,10 @@ function App() {
                         Recommended Sample Rate: {samplePercentage}%{" "}
                       </Typography>
                       <p>Calculation breakdown:</p>
-                      Max transactions/day ={" "}
+                      Max transactions/project/day ={" "}
                       {maxTransactionsPerDay.toLocaleString()}
                       <br />
-                      Estimated transactions/day ={" "}
+                      Estimated transactions/project/day ={" "}
                       {calculatedTransactions.toLocaleString()}
                       <br />
                       Sample rate = ({maxTransactionsPerDay.toLocaleString()} /{" "}
