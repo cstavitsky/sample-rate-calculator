@@ -216,7 +216,7 @@ function App() {
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`(${maxTransactionsPerDay} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()}`}
+                                    {`(${maxTransactionsPerDay.toLocaleString()} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()}`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
