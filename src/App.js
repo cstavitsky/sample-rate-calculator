@@ -144,7 +144,7 @@ function App() {
                       Estimated transactions/day ={" "}
                       {calculatedTransactions.toLocaleString()}
                       <br />
-                      Sample rate = ({maxTransactionsPerDay.toLocaleString()} /
+                      Sample rate = ({maxTransactionsPerDay.toLocaleString()} /{" "}
                       {calculatedTransactions.toLocaleString()}) * 100% ={" "}
                       {samplePercentage}%
                     </div>
