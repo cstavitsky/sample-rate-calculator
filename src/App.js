@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Container,
-  Grid2,
+  Grid,
   TextField,
   Typography,
   Paper,
@@ -21,11 +21,16 @@ const ascii = "U = 1/(R_(si) + sum_(i=1)^n(s_n/lambda_n) + R_(se))";
 
 function App() {
   const [transactionsPerSession, setTransactionsPerSession] = useState("10");
+  const [txPerSecond, setTxPerSecond] = useState(200);
   const [sessionsPerDay, setSessionsPerDay] = useState("5000");
   const [errorMessage, setErrorMessage] = useState("");
   const printRef = React.useRef();
 
-  const maxTransactionsPerDay = 13824000;
+  const paddingForGrowthOrSpikes = 0.8; // 80%
+  const timeMultipliers = 60 * 60 * 24;
+  const maxTransactionsPerDay = txPerSecond * timeMultipliers;
+  const paddedMaxTransactionsPerDay =
+    maxTransactionsPerDay * paddingForGrowthOrSpikes;
 
   const handleDownloadImage = async () => {
     const element = printRef.current;
@@ -84,52 +89,33 @@ function App() {
   // Calculate sampling percentage if exceeding max transactions per day
   const calculateSamplePercentage = () => {
     if (calculatedTransactions > maxTransactionsPerDay) {
-      return ((maxTransactionsPerDay / calculatedTransactions) * 100).toFixed(
-        3
-      );
+      return (maxTransactionsPerDay / calculatedTransactions).toFixed(3);
     }
-    return 100;
+    return 1.0;
   };
 
   const samplePercentage = calculateSamplePercentage();
 
   return (
-    <Container l style={{ marginTop: "50px" }}>
+    <Container style={{ marginTop: "50px" }}>
       <Paper elevation={3} style={{ padding: "30px" }}>
-        <Grid2 container spacing={2}>
-          <Grid2 item xs={2} textAlign="center">
-            <Box>
-              <Typography variant="h4">
-                Transaction Sample Rate Calculator
-              </Typography>
-
-              <Typography variant="h6">
-                1. How many transactions are generated in a "typical" session?
-              </Typography>
-              <Typography>
-                <p>
-                  While we can guess this based on enabled/in-play
-                  auto-instrumentation, we should instead have the customer
-                  integrate Sentry locally in a dev environment using a{" "}
-                  <b>1.0</b> tracesSampleRate, then ask them to walk through a
-                  typical critical flow / user-journey. Then we can see how many
-                  transactions were generated and sent_up to Sentry . This will
-                  give us an accurate count of number-of-transactions per
-                  session.
-                </p>
-              </Typography>
-
-              <Typography variant="h6">
-                2. How many sessions in a given day?
-                <Typography variant="body2">
-                  Customers will are likely already measuring and tracking this,
-                  so we can ask directly.{" "}
-                </Typography>
-              </Typography>
-            </Box>
-          </Grid2>
-
-          <Grid2 item xs={6}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography inline variant="h4" style={{ padding: "30px" }}>
+              Transaction Sample Rate Calculator
+            </Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <Typography inline variant="h6">
+              1. How many transactions are generated in a "typical" session?
+            </Typography>
+            <Typography inline>
+              Have customer integrate Sentry locally with a 1.0 sample rate.
+              Next, they should walk through a typical critical flow /
+              user-journey. Check Sentry to see how many transactions showed up.
+            </Typography>
+          </Grid>
+          <Grid item xs={4} textAlign="center">
             <TextField
               label="Transactions per session"
               variant="outlined"
@@ -139,7 +125,22 @@ function App() {
               error={!!errorMessage}
               helperText={errorMessage ? "Please enter a valid integer" : ""}
             />
+          </Grid>
+
+          <Grid item xs={12}>
             <hr />
+          </Grid>
+
+          <Grid item xs={8}>
+            <Typography variant="h6">
+              2. How many sessions in a given day?
+              <Typography variant="body2">
+                Customers will are likely already measuring and tracking this,
+                so we can ask directly.{" "}
+              </Typography>
+            </Typography>
+          </Grid>
+          <Grid item xs={4}>
             <TextField
               label="Sessions per day"
               variant="outlined"
@@ -149,33 +150,59 @@ function App() {
               error={!!errorMessage}
               helperText={errorMessage ? "Please enter a valid integer" : ""}
             />
-          </Grid2>
+          </Grid>
+
+          <Grid item xs={12}>
+            <hr />
+          </Grid>
 
           {calculatedTransactions > 0 && (
-            <Grid2 item xs={12}>
+            <Grid item xs={12}>
               <Box textAlign="left">
                 <div ref={printRef} class="padded">
                   <TableContainer m component={Paper}>
                     <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Calculation</TableCell>
-                          <TableCell align="right">Value</TableCell>
-                        </TableRow>
-                      </TableHead>
                       <TableBody>
                         <TableRow>
                           <TableCell>
-                            Estimated transactions/project/day
+                            True Max transactions/day (per project)
                           </TableCell>
                           <TableCell align="right">
-                            {calculatedTransactions.toLocaleString()}
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`(${txPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()}`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell>Max transactions/project/day</TableCell>
+                          <TableCell>
+                            Padded Max transactions/day (per project)
+                          </TableCell>
                           <TableCell align="right">
-                            {maxTransactionsPerDay.toLocaleString()}
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`(${maxTransactionsPerDay} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()}`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>
+                            Estimated transactions/day (per project)
+                          </TableCell>
+                          <TableCell align="right">
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`(${transactionsPerSession} " transactions/session" * ${sessionsPerDay} " sessions/day") = ${calculatedTransactions.toLocaleString()}`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -183,19 +210,33 @@ function App() {
                             Recommended tracesSampleRate
                           </TableCell>
                           <TableCell align="right">
-                            {samplePercentage === 100 ? (
+                            {samplePercentage === 1.0 ? (
                               <Typography
                                 color="green"
                                 style={{ fontWeight: "bold" }}
                               >
-                                1.0
+                                <MathJax.Context input="ascii">
+                                  <div>
+                                    <MathJax.Node inline>
+                                      {`${calculatedTransactions.toLocaleString()} " transactions/project/day" < ${paddedMaxTransactionsPerDay.toLocaleString()} " transactions/project/day" => ${samplePercentage.toFixed(
+                                        1
+                                      )}`}
+                                    </MathJax.Node>
+                                  </div>
+                                </MathJax.Context>
                               </Typography>
                             ) : (
                               <Typography
                                 color="red"
                                 style={{ fontWeight: "bold" }}
                               >
-                                {samplePercentage / 100}
+                                <MathJax.Context input="ascii">
+                                  <div>
+                                    <MathJax.Node inline>
+                                      {`frac(${paddedMaxTransactionsPerDay.toLocaleString()} " transactions/day")(${calculatedTransactions.toLocaleString()} " transactions/day") "(per project)" = ${samplePercentage}`}
+                                    </MathJax.Node>
+                                  </div>
+                                </MathJax.Context>
                               </Typography>
                             )}
                           </TableCell>
@@ -204,47 +245,6 @@ function App() {
                     </Table>
                   </TableContainer>
                   <p></p>
-                  {samplePercentage === 100 ? (
-                    <Typography color="green" style={{ fontWeight: "bold" }}>
-                      <MathJax.Context input="ascii">
-                        <div>
-                          <MathJax.Node inline>
-                            {`"estimated transactions/project/day" < "max transactions/project/day" => ${samplePercentage}%`}
-                          </MathJax.Node>
-                        </div>
-                      </MathJax.Context>
-                      <p></p>
-                      <p></p>
-
-                      <MathJax.Context input="ascii">
-                        <div>
-                          <MathJax.Node inline>
-                            {`${calculatedTransactions.toLocaleString()} " transactions/project/day" < ${maxTransactionsPerDay.toLocaleString()} " transactions/project/day" => ${samplePercentage}%`}
-                          </MathJax.Node>
-                        </div>
-                      </MathJax.Context>
-                    </Typography>
-                  ) : (
-                    <Typography color="error" style={{ fontWeight: "bold" }}>
-                      <br />
-                      <MathJax.Context input="ascii">
-                        <div>
-                          <MathJax.Node inline>
-                            {`frac("max transactions/project/day")("estimated transactions/project/day") * 100% = "sample rate percentage"`}
-                          </MathJax.Node>
-                        </div>
-                      </MathJax.Context>
-                      <p></p>
-                      <p></p>
-                      <MathJax.Context input="ascii">
-                        <div>
-                          <MathJax.Node inline>
-                            {`frac(${maxTransactionsPerDay.toLocaleString()} " transactions/project/day")(${calculatedTransactions.toLocaleString()} " transactions/project/day") * 100% = ${samplePercentage}%`}
-                          </MathJax.Node>
-                        </div>
-                      </MathJax.Context>
-                    </Typography>
-                  )}
                 </div>
                 <div>
                   <Button
@@ -257,9 +257,9 @@ function App() {
                   </Button>
                 </div>
               </Box>
-            </Grid2>
+            </Grid>
           )}
-        </Grid2>
+        </Grid>
       </Paper>
     </Container>
   );
