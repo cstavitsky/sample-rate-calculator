@@ -278,7 +278,7 @@ function App() {
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`(${transactionsPerSession} " transactions/session" * ${sessionsPerDay} " sessions/day") = ${calculatedTransactions.toLocaleString()} " estimated transactions/day"`}
+                                    {`(${transactionsPerSession.toLocaleString()} " transactions/session" * ${sessionsPerDay.toLocaleString()} " sessions/day") = ${calculatedTransactions.toLocaleString()} " estimated transactions/day"`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
