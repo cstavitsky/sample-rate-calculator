@@ -109,7 +109,7 @@ function App() {
             <Typography inline variant="h6">
               1. How many transactions are generated in a "typical" session?
             </Typography>
-            <Typography inline>
+            <Typography variant="body2">
               Have customer integrate Sentry locally with a 1.0 sample rate.
               Next, they should walk through a typical critical flow /
               user-journey. Check Sentry to see how many transactions showed up.
@@ -164,17 +164,47 @@ function App() {
                     <Table>
                       <TableBody>
                         <TableRow>
+                          <TableCell>Transactions/session</TableCell>
+                          <TableCell align="right">
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`${transactionsPerSession}`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Sessions/day</TableCell>
+                          <TableCell align="right">
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`${sessionsPerDay}`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
                           <TableCell>
                             True Max transactions/day (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <MathJax.Context input="ascii">
-                              <div>
-                                <MathJax.Node inline>
-                                  {`(${txPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()}`}
-                                </MathJax.Node>
-                              </div>
-                            </MathJax.Context>
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`(${txPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()}`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -182,13 +212,15 @@ function App() {
                             Padded Max transactions/day (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <MathJax.Context input="ascii">
-                              <div>
-                                <MathJax.Node inline>
-                                  {`(${maxTransactionsPerDay} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()}`}
-                                </MathJax.Node>
-                              </div>
-                            </MathJax.Context>
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`(${maxTransactionsPerDay} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()}`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -196,13 +228,15 @@ function App() {
                             Estimated transactions/day (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <MathJax.Context input="ascii">
-                              <div>
-                                <MathJax.Node inline>
-                                  {`(${transactionsPerSession} " transactions/session" * ${sessionsPerDay} " sessions/day") = ${calculatedTransactions.toLocaleString()}`}
-                                </MathJax.Node>
-                              </div>
-                            </MathJax.Context>
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`(${transactionsPerSession} " transactions/session" * ${sessionsPerDay} " sessions/day") = ${calculatedTransactions.toLocaleString()}`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -211,10 +245,7 @@ function App() {
                           </TableCell>
                           <TableCell align="right">
                             {samplePercentage === 1.0 ? (
-                              <Typography
-                                color="green"
-                                style={{ fontWeight: "bold" }}
-                              >
+                              <Typography color="green">
                                 <MathJax.Context input="ascii">
                                   <div>
                                     <MathJax.Node inline>
