@@ -205,9 +205,17 @@ function App() {
                       <br />
                       <MathJax.Context input="ascii">
                         <div>
-                          Reason for sample rate:{" "}
                           <MathJax.Node inline>
-                            {`frac(${maxTransactionsPerDay.toLocaleString()} " "transactions)(day) * frac(day)(${calculatedTransactions.toLocaleString()} " "transactions)*100% = ${samplePercentage}%`}
+                            {`frac("max transactions")("day") * frac("day")("estimated transactions") * 100% = "sample rate percentage"`}
+                          </MathJax.Node>
+                        </div>
+                      </MathJax.Context>
+                      <p></p>
+                      <p></p>
+                      <MathJax.Context input="ascii">
+                        <div>
+                          <MathJax.Node inline>
+                            {`frac(${maxTransactionsPerDay.toLocaleString()} " transactions")("day") * frac("day")(${calculatedTransactions.toLocaleString()} " transactions")*100% = ${samplePercentage}%`}
                           </MathJax.Node>
                         </div>
                       </MathJax.Context>
