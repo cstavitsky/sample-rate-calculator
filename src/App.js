@@ -199,7 +199,7 @@ function App() {
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`${transactionsPerSession}`}
+                                    {`${transactionsPerSession} " transactions/session"`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
@@ -213,21 +213,7 @@ function App() {
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`${sessionsPerDay}`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Events/second</TableCell>
-                          <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`${eventsPerSecond}`}
+                                    {`${sessionsPerDay} " sessions/day"`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
@@ -236,14 +222,14 @@ function App() {
                         </TableRow>
                         <TableRow>
                           <TableCell>
-                            True Max transactions/day (per project)
+                            Events/second <br /> (per project)
                           </TableCell>
                           <TableCell align="right">
                             <Typography variant="body2">
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`(${eventsPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()}`}
+                                    {`${eventsPerSecond} " events/second"`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
@@ -252,14 +238,15 @@ function App() {
                         </TableRow>
                         <TableRow>
                           <TableCell>
-                            Padded Max transactions/day (per project)
+                            True Max transactions/day <br />
+                            (per project)
                           </TableCell>
                           <TableCell align="right">
                             <Typography variant="body2">
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`(${maxTransactionsPerDay.toLocaleString()} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()}`}
+                                    {`(${eventsPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()} " max transactions/day"`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
@@ -268,14 +255,30 @@ function App() {
                         </TableRow>
                         <TableRow>
                           <TableCell>
-                            Estimated transactions/day (per project)
+                            Padded Max transactions/day <br /> (per project)
                           </TableCell>
                           <TableCell align="right">
                             <Typography variant="body2">
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`(${transactionsPerSession} " transactions/session" * ${sessionsPerDay} " sessions/day") = ${calculatedTransactions.toLocaleString()}`}
+                                    {`(${maxTransactionsPerDay.toLocaleString()} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()} " padded max transactions/day"`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>
+                            Estimated transactions/day <br /> (per project)
+                          </TableCell>
+                          <TableCell align="right">
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`(${transactionsPerSession} " transactions/session" * ${sessionsPerDay} " sessions/day") = ${calculatedTransactions.toLocaleString()} " estimated transactions/day"`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
@@ -287,12 +290,12 @@ function App() {
                             Recommended tracesSampleRate
                           </TableCell>
                           <TableCell align="right">
-                            {samplePercentage === 1.0 ? (
+                            {samplePercentage >= 1.0 ? (
                               <Typography color="green">
                                 <MathJax.Context input="ascii">
                                   <div>
                                     <MathJax.Node inline>
-                                      {`${calculatedTransactions.toLocaleString()} " transactions/project/day" < ${paddedMaxTransactionsPerDay.toLocaleString()} " transactions/project/day" => ${samplePercentage.toFixed(
+                                      {`${calculatedTransactions.toLocaleString()} " transactions/day (per project)" < ${paddedMaxTransactionsPerDay.toLocaleString()} " transactions/day (per project)" => ${samplePercentage.toFixed(
                                         1
                                       )}`}
                                     </MathJax.Node>
@@ -307,7 +310,7 @@ function App() {
                                 <MathJax.Context input="ascii">
                                   <div>
                                     <MathJax.Node inline>
-                                      {`frac(${paddedMaxTransactionsPerDay.toLocaleString()} " transactions/day")(${calculatedTransactions.toLocaleString()} " transactions/day") "(per project)" = ${samplePercentage}`}
+                                      {`frac(${paddedMaxTransactionsPerDay.toLocaleString()} " padded max transactions/day")(${calculatedTransactions.toLocaleString()} " estimated transactions/day") "(per project)" = ${samplePercentage}`}
                                     </MathJax.Node>
                                   </div>
                                 </MathJax.Context>
