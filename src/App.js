@@ -67,7 +67,7 @@ function App() {
       <Paper elevation={3} style={{ padding: "20px" }}>
         <Box textAlign="center">
           <Typography variant="h4" gutterBottom>
-            Transaction Calculator
+            Transaction Sample Rate Calculator
           </Typography>
         </Box>
 
