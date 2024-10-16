@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 
 function App() {
-  const [transactionsPerSession, setTransactionsPerSession] = useState("");
-  const [sessionsPerDay, setSessionsPerDay] = useState("");
+  const [transactionsPerSession, setTransactionsPerSession] = useState("10");
+  const [sessionsPerDay, setSessionsPerDay] = useState("5000");
   const [errorMessage, setErrorMessage] = useState("");
 
   const maxTransactionsPerDay = 13824000;
@@ -135,7 +135,7 @@ function App() {
                   ) : (
                     <div>
                       <Typography variant="h5">
-                        Sampling Percentage: {samplePercentage}%{" "}
+                        Recommended Sample Rate: {samplePercentage}%{" "}
                       </Typography>
                       <p>Calculation breakdown:</p>
                       Max transactions/day ={" "}
