@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -27,6 +27,11 @@ function App() {
   const [sessionsPerDay, setSessionsPerDay] = useState("5000");
   const [eventsPerSecond, setEventsPerSecond] = useState(200); // new state for events per second
   const [errorMessage, setErrorMessage] = useState("");
+
+  // New states for calculated transactions and sample percentage
+  const [calculatedTransactions, setCalculatedTransactions] = useState(0);
+  const [samplePercentage, setSamplePercentage] = useState(1.0);
+
   const printRef = React.useRef();
 
   const paddingForGrowthOrSpikes = 0.8; // 80%
@@ -34,25 +39,6 @@ function App() {
   const maxTransactionsPerDay = eventsPerSecond * timeMultipliers;
   const paddedMaxTransactionsPerDay =
     maxTransactionsPerDay * paddingForGrowthOrSpikes;
-
-  const handleDownloadImage = async () => {
-    const element = printRef.current;
-    const canvas = await html2canvas(element);
-
-    const data = canvas.toDataURL("image/jpg");
-    const link = document.createElement("a");
-
-    if (typeof link.download === "string") {
-      link.href = data;
-      link.download = `samplerate_${samplePercentage}.png`;
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      window.open(data);
-    }
-  };
 
   // Utility function to format numbers with commas
   const formatNumberWithCommas = (value) => {
@@ -77,27 +63,52 @@ function App() {
     }
   };
 
-  // Calculate results
-  const calculateTransactionsPerDay = () => {
-    if (transactionsPerSession && sessionsPerDay) {
-      const transactions = parseInt(removeCommas(transactionsPerSession));
-      const sessions = parseInt(removeCommas(sessionsPerDay));
-      return transactions * sessions;
+  // useEffect to calculate transactions per day when inputs change
+  useEffect(() => {
+    const calculateTransactionsPerDay = () => {
+      if (transactionsPerSession && sessionsPerDay) {
+        const transactions = parseInt(removeCommas(transactionsPerSession));
+        const sessions = parseInt(removeCommas(sessionsPerDay));
+        return transactions * sessions;
+      }
+      return 0;
+    };
+
+    setCalculatedTransactions(calculateTransactionsPerDay());
+  }, [transactionsPerSession, sessionsPerDay]);
+
+  // useEffect to calculate sample percentage when calculated transactions or other inputs change
+  useEffect(() => {
+    const calculateSamplePercentage = () => {
+      if (calculatedTransactions > paddedMaxTransactionsPerDay) {
+        return (paddedMaxTransactionsPerDay / calculatedTransactions).toFixed(
+          3
+        );
+      }
+      return 1.0;
+    };
+
+    setSamplePercentage(calculateSamplePercentage());
+  }, [calculatedTransactions, paddedMaxTransactionsPerDay]);
+
+  const handleDownloadImage = async () => {
+    const element = printRef.current;
+    const canvas = await html2canvas(element);
+
+    const data = canvas.toDataURL("image/jpg");
+    const link = document.createElement("a");
+
+    if (typeof link.download === "string") {
+      link.href = data;
+      link.download = `samplerate_${samplePercentage}.png`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
     }
-    return 0;
   };
-
-  const calculatedTransactions = calculateTransactionsPerDay();
-
-  // Calculate sampling percentage if exceeding max transactions per day
-  const calculateSamplePercentage = () => {
-    if (calculatedTransactions > maxTransactionsPerDay) {
-      return (maxTransactionsPerDay / calculatedTransactions).toFixed(3);
-    }
-    return 1.0;
-  };
-
-  const samplePercentage = calculateSamplePercentage();
 
   return (
     <Container style={{ marginTop: "50px" }}>
@@ -138,8 +149,8 @@ function App() {
             <Typography variant="h6">
               2. How many sessions in a given day?
               <Typography variant="body2">
-                Customers will are likely already measuring and tracking this,
-                so we can ask directly.{" "}
+                Customers are likely already measuring and tracking this, so we
+                can ask directly.
               </Typography>
             </Typography>
           </Grid>
@@ -159,7 +170,7 @@ function App() {
             <hr />
           </Grid>
 
-          {/* New Dropdown for Events per Second */}
+          {/* Dropdown for Events per Second */}
           <Grid item xs={8}>
             <Typography variant="h6">
               3. How many events per second?
@@ -188,36 +199,32 @@ function App() {
           {calculatedTransactions > 0 && (
             <Grid item xs={12}>
               <Box textAlign="left">
-                <div ref={printRef} class="padded">
+                <div ref={printRef} className="padded">
                   <TableContainer m component={Paper}>
                     <Table>
                       <TableBody>
                         <TableRow>
                           <TableCell>Transactions/session</TableCell>
                           <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`${transactionsPerSession} " transactions/session"`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`${transactionsPerSession} " transactions/session"`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Sessions/day</TableCell>
                           <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`${sessionsPerDay} " sessions/day"`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`${sessionsPerDay} " sessions/day"`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -225,15 +232,13 @@ function App() {
                             Events/second <br /> (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`${eventsPerSecond} " events/second"`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`${eventsPerSecond} " events/second"`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -242,15 +247,13 @@ function App() {
                             (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`(${eventsPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()} " max transactions/day"`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`(${eventsPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()} " max transactions/day"`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -258,15 +261,13 @@ function App() {
                             Padded Max transactions/day <br /> (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`(${maxTransactionsPerDay.toLocaleString()} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()} " padded max transactions/day"`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`(${maxTransactionsPerDay.toLocaleString()} " max transactions/day" * ${paddingForGrowthOrSpikes} " padding") = ${paddedMaxTransactionsPerDay.toLocaleString()} " padded max transactions/day"`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
@@ -274,15 +275,13 @@ function App() {
                             Estimated transactions/day <br /> (per project)
                           </TableCell>
                           <TableCell align="right">
-                            <Typography variant="body2">
-                              <MathJax.Context input="ascii">
-                                <div>
-                                  <MathJax.Node inline>
-                                    {`(${transactionsPerSession.toLocaleString()} " transactions/session" * ${sessionsPerDay.toLocaleString()} " sessions/day") = ${calculatedTransactions.toLocaleString()} " estimated transactions/day"`}
-                                  </MathJax.Node>
-                                </div>
-                              </MathJax.Context>
-                            </Typography>
+                            <MathJax.Context input="ascii">
+                              <div>
+                                <MathJax.Node inline>
+                                  {`(${transactionsPerSession.toLocaleString()} " transactions/session" * ${sessionsPerDay.toLocaleString()} " sessions/day") = ${calculatedTransactions.toLocaleString()} " estimated transactions/day"`}
+                                </MathJax.Node>
+                              </div>
+                            </MathJax.Context>
                           </TableCell>
                         </TableRow>
                         <TableRow>
