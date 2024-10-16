@@ -15,7 +15,6 @@ import {
   TableRow,
 } from "@mui/material";
 import html2canvas from "html2canvas";
-// import { MathJax, MathJaxContext } from "better-react-mathjax";
 import MathJax from "react-mathjax2";
 
 const ascii = "U = 1/(R_(si) + sum_(i=1)^n(s_n/lambda_n) + R_(se))";
@@ -183,6 +182,16 @@ function App() {
                   <p></p>
                   {samplePercentage === 100 ? (
                     <Typography color="green" style={{ fontWeight: "bold" }}>
+                      <MathJax.Context input="ascii">
+                        <div>
+                          <MathJax.Node inline>
+                            {`frac("estimated transactions")(day) < frac("max transactions")(day) => ${samplePercentage}%`}
+                          </MathJax.Node>
+                        </div>
+                      </MathJax.Context>
+                      <p></p>
+                      <p></p>
+
                       <MathJax.Context input="ascii">
                         <div>
                           <MathJax.Node inline>
