@@ -1,117 +1,162 @@
 import React, { useState } from "react";
+import {
+  Container,
+  Grid2,
+  TextField,
+  Typography,
+  Paper,
+  Box,
+} from "@mui/material";
 
-const TransactionCalculator = () => {
+function App() {
   const [transactionsPerSession, setTransactionsPerSession] = useState("");
   const [sessionsPerDay, setSessionsPerDay] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const MAX_TRANSACTIONS_PER_DAY = 13824000;
-  const MAX_TRANSACTIONS_CALCULATION = 17280000 * 0.8;
+  const maxTransactionsPerDay = 13824000;
 
-  // Helper function to format numbers with commas
-  const formatNumber = (num) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  // Utility function to format numbers with commas
+  const formatNumberWithCommas = (value) => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  // Validate input to allow only integers
-  const handleInputChange = (setter) => (e) => {
+  // Remove commas for calculations
+  const removeCommas = (value) => {
+    return value.replace(/,/g, "");
+  };
+
+  // Handle form input with comma formatting
+  const handleInput = (setState) => (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value)) {
+    const numericValue = value.replace(/,/g, ""); // Remove commas before processing
+
+    if (/^\d*$/.test(numericValue)) {
+      setState(formatNumberWithCommas(numericValue));
       setErrorMessage("");
-      setter(value);
     } else {
-      setErrorMessage("Please enter a valid integer.");
+      setErrorMessage("Please enter a valid integer");
     }
   };
 
-  // Calculate total transactions per day
+  // Calculate results
   const calculateTransactionsPerDay = () => {
-    const transactions = parseInt(transactionsPerSession, 10);
-    const sessions = parseInt(sessionsPerDay, 10);
-
-    if (!transactions || !sessions) {
-      return 0;
+    if (transactionsPerSession && sessionsPerDay) {
+      const transactions = parseInt(removeCommas(transactionsPerSession));
+      const sessions = parseInt(removeCommas(sessionsPerDay));
+      return transactions * sessions;
     }
-    return transactions * sessions;
+    return 0;
   };
 
-  // Calculate sampling rate if transactions exceed max
-  const calculateSampleRate = (transactionsPerDay) => {
-    if (transactionsPerDay <= MAX_TRANSACTIONS_PER_DAY) {
-      return 100;
+  const calculatedTransactions = calculateTransactionsPerDay();
+
+  // Calculate sampling percentage if exceeding max transactions per day
+  const calculateSamplePercentage = () => {
+    if (calculatedTransactions > maxTransactionsPerDay) {
+      return ((maxTransactionsPerDay / calculatedTransactions) * 100).toFixed(
+        3
+      );
     }
-    return (MAX_TRANSACTIONS_PER_DAY / transactionsPerDay) * 100;
+    return 100;
   };
 
-  const transactionsPerDay = calculateTransactionsPerDay();
-  const sampleRate = calculateSampleRate(transactionsPerDay);
+  const samplePercentage = calculateSamplePercentage();
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      <h2>Transaction Calculator</h2>
+    <Container maxWidth="m" style={{ marginTop: "50px" }}>
+      <Paper elevation={3} style={{ padding: "20px" }}>
+        <Box textAlign="center">
+          <Typography variant="h4" gutterBottom>
+            Transaction Calculator
+          </Typography>
+        </Box>
 
-      <div style={{ marginBottom: "10px" }}>
-        <label>
-          Number of transactions generated in a typical session
-          (transactions/session):
-          <input
-            type="text"
-            value={transactionsPerSession}
-            onChange={handleInputChange(setTransactionsPerSession)}
-            style={{ marginLeft: "10px" }}
-          />
-        </label>
-      </div>
+        <Grid2 container spacing={6} direction="column" alignItems="center">
+          <Grid2 item>
+            <TextField
+              label="Transactions per session"
+              variant="outlined"
+              fullWidth
+              value={transactionsPerSession}
+              onChange={handleInput(setTransactionsPerSession)}
+              error={!!errorMessage}
+              helperText={errorMessage ? "Please enter a valid integer" : ""}
+            />
+          </Grid2>
 
-      <div style={{ marginBottom: "10px" }}>
-        <label>
-          Number of sessions per day (sessions/day):
-          <input
-            type="text"
-            value={sessionsPerDay}
-            onChange={handleInputChange(setSessionsPerDay)}
-            style={{ marginLeft: "10px" }}
-          />
-        </label>
-      </div>
+          <Grid2 item>
+            <TextField
+              label="Sessions per day"
+              variant="outlined"
+              fullWidth
+              value={sessionsPerDay}
+              onChange={handleInput(setSessionsPerDay)}
+              error={!!errorMessage}
+              helperText={errorMessage ? "Please enter a valid integer" : ""}
+            />
+          </Grid2>
 
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+          {calculatedTransactions > 0 && (
+            <Grid2 item>
+              <Box textAlign="left">
+                <Typography variant="h6">
+                  Max transactions/day: 13,824,000
+                </Typography>
+                <Typography variant="h6">
+                  Estimated transactions/day:{" "}
+                  {calculatedTransactions.toLocaleString()}
+                </Typography>
+                <hr />
 
-      <div style={{ marginTop: "20px" }}>
-        <h3>Calculated Values:</h3>
-        <p>
-          Transactions per day: {formatNumber(transactionsPerDay)}{" "}
-          transactions/day
-        </p>
+                {calculatedTransactions > maxTransactionsPerDay ? (
+                  <>
+                    <Typography
+                      variant="h6"
+                      color="error"
+                      style={{ fontWeight: "bold" }}
+                    >
+                      Customer will need to sample!
+                    </Typography>
+                    <hr />
+                  </>
+                ) : (
+                  <Typography
+                    variant="h6"
+                    color="green"
+                    style={{ fontWeight: "bold" }}
+                  >
+                    Sampling at 100% is OK.
+                  </Typography>
+                )}
 
-        <p>
-          Max number of transactions per day:{" "}
-          {formatNumber(MAX_TRANSACTIONS_PER_DAY)} transactions/day (17,280,000
-          transactions/day * 80%)
-        </p>
-
-        {transactionsPerDay > MAX_TRANSACTIONS_PER_DAY && (
-          <p style={{ color: "red", fontWeight: "bold" }}>
-            You will need to sample the transactions.
-          </p>
-        )}
-
-        <h3>Sample Rate Calculation:</h3>
-        <p>Sample rate: {sampleRate.toFixed(3)}%</p>
-
-        {transactionsPerDay > MAX_TRANSACTIONS_PER_DAY && (
-          <p>
-            Calculation breakdown: <br />
-            Max transactions/day = {formatNumber(MAX_TRANSACTIONS_PER_DAY)}{" "}
-            <br />
-            Current transactions/day = {formatNumber(transactionsPerDay)} <br />
-            Sample rate = ({formatNumber(MAX_TRANSACTIONS_PER_DAY)} /{" "}
-            {formatNumber(transactionsPerDay)}) * 100 = {sampleRate.toFixed(3)}%
-          </p>
-        )}
-      </div>
-    </div>
+                <Typography variant="h6">
+                  {samplePercentage === 100 ? (
+                    "(Estimated transactions/day is below the max)"
+                  ) : (
+                    <div>
+                      <Typography variant="h5">
+                        Sampling Percentage: {samplePercentage}%{" "}
+                      </Typography>
+                      <p>Calculation breakdown:</p>
+                      Max transactions/day ={" "}
+                      {maxTransactionsPerDay.toLocaleString()}
+                      <br />
+                      Estimated transactions/day ={" "}
+                      {calculatedTransactions.toLocaleString()}
+                      <br />
+                      Sample rate = ({maxTransactionsPerDay.toLocaleString()} /
+                      {calculatedTransactions.toLocaleString()}) * 100% ={" "}
+                      {samplePercentage}%
+                    </div>
+                  )}
+                </Typography>
+              </Box>
+            </Grid2>
+          )}
+        </Grid2>
+      </Paper>
+    </Container>
   );
-};
+}
 
-export default TransactionCalculator;
+export default App;
