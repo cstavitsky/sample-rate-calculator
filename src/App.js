@@ -103,7 +103,7 @@ function App() {
                 Transaction Sample Rate Calculator
               </Typography>
 
-              <Typography variant="h7">
+              <Typography variant="h6">
                 1. How many transactions are generated in a "typical" session?
               </Typography>
               <Typography>
