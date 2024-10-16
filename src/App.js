@@ -11,8 +11,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import html2canvas from "html2canvas";
 import MathJax from "react-mathjax2";
@@ -21,14 +24,14 @@ const ascii = "U = 1/(R_(si) + sum_(i=1)^n(s_n/lambda_n) + R_(se))";
 
 function App() {
   const [transactionsPerSession, setTransactionsPerSession] = useState("10");
-  const [txPerSecond, setTxPerSecond] = useState(200);
   const [sessionsPerDay, setSessionsPerDay] = useState("5000");
+  const [eventsPerSecond, setEventsPerSecond] = useState(200); // new state for events per second
   const [errorMessage, setErrorMessage] = useState("");
   const printRef = React.useRef();
 
   const paddingForGrowthOrSpikes = 0.8; // 80%
   const timeMultipliers = 60 * 60 * 24;
-  const maxTransactionsPerDay = txPerSecond * timeMultipliers;
+  const maxTransactionsPerDay = eventsPerSecond * timeMultipliers;
   const paddedMaxTransactionsPerDay =
     maxTransactionsPerDay * paddingForGrowthOrSpikes;
 
@@ -156,6 +159,32 @@ function App() {
             <hr />
           </Grid>
 
+          {/* New Dropdown for Events per Second */}
+          <Grid item xs={8}>
+            <Typography variant="h6">
+              3. How many events per second?
+              <Typography variant="body2">
+                Choose the expected number of events per second for the project
+                (default is 200 transactions/second).
+              </Typography>
+            </Typography>
+          </Grid>
+          <Grid item xs={4}>
+            <FormControl fullWidth>
+              <InputLabel>Events per second</InputLabel>
+              <Select
+                value={eventsPerSecond}
+                label="Events per second"
+                onChange={(e) => setEventsPerSecond(e.target.value)}
+              >
+                <MenuItem value={100}>100</MenuItem>
+                <MenuItem value={200}>200</MenuItem>
+                <MenuItem value={300}>300</MenuItem>
+                <MenuItem value={400}>400</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
           {calculatedTransactions > 0 && (
             <Grid item xs={12}>
               <Box textAlign="left">
@@ -192,6 +221,20 @@ function App() {
                           </TableCell>
                         </TableRow>
                         <TableRow>
+                          <TableCell>Events/second</TableCell>
+                          <TableCell align="right">
+                            <Typography variant="body2">
+                              <MathJax.Context input="ascii">
+                                <div>
+                                  <MathJax.Node inline>
+                                    {`${eventsPerSecond}`}
+                                  </MathJax.Node>
+                                </div>
+                              </MathJax.Context>
+                            </Typography>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
                           <TableCell>
                             True Max transactions/day (per project)
                           </TableCell>
@@ -200,7 +243,7 @@ function App() {
                               <MathJax.Context input="ascii">
                                 <div>
                                   <MathJax.Node inline>
-                                    {`(${txPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()}`}
+                                    {`(${eventsPerSecond} " transactions/second" * "60 seconds/minute" * "60 minutes/hour" * "24 hours/day") = ${maxTransactionsPerDay.toLocaleString()}`}
                                   </MathJax.Node>
                                 </div>
                               </MathJax.Context>
