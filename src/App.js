@@ -294,7 +294,7 @@ function App() {
                                 <MathJax.Context input="ascii">
                                   <div>
                                     <MathJax.Node inline>
-                                      {`${calculatedTransactions.toLocaleString()} " transactions/day (per project)" < ${paddedMaxTransactionsPerDay.toLocaleString()} " transactions/day (per project)" => ${samplePercentage.toFixed(
+                                      {`${calculatedTransactions.toLocaleString()} " estimated transactions/day" < ${paddedMaxTransactionsPerDay.toLocaleString()} " padded max transactions/day (per project)" => ${samplePercentage.toFixed(
                                         1
                                       )}`}
                                     </MathJax.Node>
