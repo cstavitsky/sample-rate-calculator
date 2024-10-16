@@ -7,8 +7,18 @@ import {
   Paper,
   Box,
   Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import html2canvas from "html2canvas";
+// import { MathJax, MathJaxContext } from "better-react-mathjax";
+import MathJax from "react-mathjax2";
+
+const ascii = "U = 1/(R_(si) + sum_(i=1)^n(s_n/lambda_n) + R_(se))";
 
 function App() {
   const [transactionsPerSession, setTransactionsPerSession] = useState("10");
@@ -85,7 +95,7 @@ function App() {
   const samplePercentage = calculateSamplePercentage();
 
   return (
-    <Container maxWidth="m" style={{ marginTop: "50px" }}>
+    <Container m style={{ marginTop: "50px" }}>
       <Paper elevation={3} style={{ padding: "20px" }}>
         <Box textAlign="center">
           <Typography variant="h4" gutterBottom>
@@ -122,60 +132,85 @@ function App() {
             <Grid2 item>
               <Box textAlign="left">
                 <div ref={printRef} class="padded">
+                  <TableContainer m component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Calculation</TableCell>
+                          <TableCell align="right">Value</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>
+                            Estimated transactions/project/day
+                          </TableCell>
+                          <TableCell align="right">
+                            {calculatedTransactions.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell>Max transactions/project/day</TableCell>
+                          <TableCell align="right">
+                            {maxTransactionsPerDay.toLocaleString()}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell style={{ fontWeight: "bold" }}>
+                            Recommended tracesSampleRate
+                          </TableCell>
+                          <TableCell align="right">
+                            {samplePercentage === 100 ? (
+                              <Typography
+                                color="green"
+                                style={{ fontWeight: "bold" }}
+                              >
+                                1.0
+                              </Typography>
+                            ) : (
+                              <Typography
+                                color="red"
+                                style={{ fontWeight: "bold" }}
+                              >
+                                {samplePercentage / 100}
+                              </Typography>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <p></p>
                   {samplePercentage === 100 ? (
-                    <div>
-                      <Typography
-                        variant="h6"
-                        color="green"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        Sampling at 100% is OK
-                        <br />
-                        (Estimated transactions/day is below the max)
-                      </Typography>
-                      <p>Calculation breakdown:</p>
-                      Max transactions/project/day ={" "}
-                      {maxTransactionsPerDay.toLocaleString()}
-                      <br />
-                      Estimated transactions/project/day ={" "}
-                      {calculatedTransactions.toLocaleString()}
-                      <br />
-                    </div>
+                    <Typography color="green" style={{ fontWeight: "bold" }}>
+                      <MathJax.Context input="ascii">
+                        <div>
+                          <MathJax.Node inline>
+                            {`frac(${calculatedTransactions.toLocaleString()} " "transactions)(day) < frac(${maxTransactionsPerDay.toLocaleString()} " " transactions)(day) => ${samplePercentage}%`}
+                          </MathJax.Node>
+                        </div>
+                      </MathJax.Context>
+                    </Typography>
                   ) : (
-                    <div>
-                      <Typography
-                        variant="h6"
-                        color="error"
-                        style={{ fontWeight: "bold" }}
-                      >
-                        Customer will need to sample!
-                      </Typography>
-                      <hr />
-                      <Typography variant="h5">
-                        <b>
-                          Recommended tracesSampleRate: {samplePercentage / 100}{" "}
-                        </b>
-                      </Typography>
-                      <p>Calculation breakdown:</p>
-                      Max transactions/project/day ={" "}
-                      {maxTransactionsPerDay.toLocaleString()}
+                    <Typography color="error" style={{ fontWeight: "bold" }}>
                       <br />
-                      Estimated transactions/project/day ={" "}
-                      {calculatedTransactions.toLocaleString()}
-                      <br />
-                      Sample rate = ({maxTransactionsPerDay.toLocaleString()} /{" "}
-                      {calculatedTransactions.toLocaleString()}) * 100% ={" "}
-                      {samplePercentage}%
-                      <br />
-                    </div>
+                      <MathJax.Context input="ascii">
+                        <div>
+                          Reason for sample rate:{" "}
+                          <MathJax.Node inline>
+                            {`frac(${maxTransactionsPerDay.toLocaleString()} " "transactions)(day) * frac(day)(${calculatedTransactions.toLocaleString()} " "transactions)*100% = ${samplePercentage}%`}
+                          </MathJax.Node>
+                        </div>
+                      </MathJax.Context>
+                    </Typography>
                   )}
                 </div>
                 <div>
-                  <p></p>
                   <Button
                     type="button"
                     variant="contained"
                     onClick={handleDownloadImage}
+                    style={{ marginTop: "20px" }}
                   >
                     Download as Image
                   </Button>
